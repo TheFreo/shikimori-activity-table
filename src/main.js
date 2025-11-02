@@ -1,15 +1,15 @@
 let lastUrl = location.href;
 new MutationObserver(() => {
-  const currentUrl = location.href;
-  if (currentUrl !== lastUrl) {
-    lastUrl = currentUrl;
-    setTimeout(() => {startWork()}, 2000)
-  }
+    const currentUrl = location.href;
+    if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        setTimeout(() => { startWork() }, 2000)
+    }
 }).observe(document, { subtree: true, childList: true })
 
 function startWork() {
-document.querySelector(".activity").style.display = "none";
-document.querySelector(".c-left").innerHTML += `<div style="display: table-caption; width: -moz-available;"><div class="title">Активность на сайте</div><select id="yearSelect"></select><div id="contribution-wrapper">
+    document.querySelector(".activity").style.display = "none";
+    document.querySelector(".c-left").innerHTML += `<div style="display: table-caption; width: -moz-available;"><div class="title">Активность на сайте</div><select id="yearSelect"></select><h2 class="wait" style="text-align: center;">Please Wait</h2><div id="contribution-wrapper" style="display: none">
     <ul class="months">
       <liq>Jan</liq>
       <li>Feb</li>
@@ -32,36 +32,31 @@ document.querySelector(".c-left").innerHTML += `<div style="display: table-capti
     <div id="contribution-grid"></div>
   </div>
   </div></div>`;
-  parser().then(dailyActivitiesArray => {
-    const activityArr = dailyActivitiesArray;
-    createActivity(activityArr);
-});
+    parser().then(dailyActivitiesArray => {
+        const activityArr = dailyActivitiesArray;
+        createActivity(activityArr);
+    });
 }
 async function fetchUrl() {
     const userId = document.querySelector(".profile-head").dataset.userId
     let history = new Array();
+    const seenIds = new Set();
     let page = 0;
     //let delay = Math.round(60000 / 90); // Задержка для соблюдения лимита запросов
+    while (true) {
+        const response = await fetch(`https://shikimori.one/api/users/${userId}/history?limit=100&page=${page}`);
+        const json = await response.json();
+        if (!response.ok || json.length === 0) break;
 
-    while (page < 10000) {
-        page += 1;
-        //await sleep(delay);
-        let response = await fetch(`https://shikimori.one/api/users/${userId}/history?limit=100&page=${page}`);
-        let json = await response.json();
-
-        if (response.ok && json.length != 0) {
-            //console.log(`Загрузка страницы ${page}`);
-            for (let entry of json) {
-                let duplicate = history.findLast(e => e.id == entry.id);
-                if (!duplicate) {
-                    history.push(entry);
-                }
+        for (const entry of json) {
+            if (!seenIds.has(entry.id)) {
+                seenIds.add(entry.id);
+                history.push(entry);
             }
-        } else {
-            break;
         }
-    }
 
+        page++;
+    }
     return history;
 }
 
@@ -137,7 +132,7 @@ function createActivity(mainArr) {
     // Cell creation and gr
     const createCell = (count, dateString, isPrimary) => {
         const cell = document.createElement("div");
-        cell.className = "cell";   
+        cell.className = "cell";
         cell.style.backgroundColor = isPrimary ? getCellColor(count) : "transparent";
         cell.style.border = isPrimary ? 1 : "none";
         cell.title = dateString;
@@ -216,6 +211,8 @@ function createActivity(mainArr) {
         updateGrid(yearSelect.value);
     });
 
+    document.querySelector(".wait").style.display = "none";
+    document.querySelector("#contribution-wrapper").style.display = "inline-grid";
 
     //Adaptive
     if (document.querySelector(".c-left").offsetWidth >= 700) {
