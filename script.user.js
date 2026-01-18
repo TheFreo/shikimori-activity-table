@@ -161,7 +161,7 @@ body {
         const dailyActivities = {};
 
         activities.forEach(activity => {
-            const dateObj = new Date(activity.created_at);
+            const dateObj = new Date(activity);
             const year = dateObj.getFullYear();
             const month = String(dateObj.getMonth() + 1).padStart(2, '0');
             const day = String(dateObj.getDate()).padStart(2, '0');
