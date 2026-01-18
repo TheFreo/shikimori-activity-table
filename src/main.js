@@ -39,7 +39,8 @@ function startWork() {
 }
 async function fetchUrl() {
     const userId = document.querySelector(".profile-head").dataset.userId
-    let history = new Array();
+    //let history = new Array();
+    let createdArr = [];
     const seenIds = new Set();
     let page = 0;
     //let delay = Math.round(60000 / 90); // Задержка для соблюдения лимита запросов
@@ -48,16 +49,16 @@ async function fetchUrl() {
         const json = await response.json();
         if (!response.ok || json.length === 0) break;
 
-        for (const entry of json) {
-            if (!seenIds.has(entry.id)) {
-                seenIds.add(entry.id);
-                history.push(entry);
+        for (const { id, created_at } of json) {
+            if (!seenIds.has(id)) {
+                seenIds.add(id);
+                createdArr.push(created_at);
             }
         }
 
         page++;
     }
-    return history;
+    return createdArr;
 }
 
 async function parser() {
@@ -65,7 +66,7 @@ async function parser() {
     const dailyActivities = {};
 
     activities.forEach(activity => {
-        const dateObj = new Date(activity.created_at);
+        const dateObj = new Date(activity);
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const day = String(dateObj.getDate()).padStart(2, '0');
