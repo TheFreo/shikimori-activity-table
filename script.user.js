@@ -4,7 +4,7 @@
 // @version      2026-01-31
 // @description  Adds an activity table to Shikimori
 // @author       TheFreo
-// @match        *://shiki.one/*
+// @match        *://shikimori.io/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=github.com
 // @grant        none
 // ==/UserScript==
@@ -140,7 +140,7 @@ body {
         let page = 0;
         //let delay = Math.round(60000 / 90); // Задержка для соблюдения лимита запросов
         while (true) {
-            const response = await fetch(`https://shiki.one/api/users/${userId}/history?limit=100&page=${page}`);
+            const response = await fetch(`https://shikimori.io/api/users/${userId}/history?limit=100&page=${page}`);
             const json = await response.json();
             if (!response.ok || json.length === 0) break;
 

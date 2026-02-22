@@ -20,7 +20,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.shikimori.one/*", "*://*.shiki.one/*"],
+      "matches": ["*://*.shikimori.one/*", "*://*.shiki.one/*", "*://*.shikimori.io/*"],
       "js": ["src/main.js"],
       "run_at": "document_end",
       "css": ["src/style.css"]
